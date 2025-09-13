@@ -1,22 +1,119 @@
 <!doctype html>
-<html lang="en">
+<html lang="cs">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>Bakaláři iCal connector</title>
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
 
-<style>
+<style is:global>
+	:root {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+			Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		background-color: #f9f9f9;
+		color: #333;
+	}
+
 	html,
 	body {
 		margin: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+		padding: 1rem;
+		box-sizing: border-box;
+	}
+
+	.container {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		max-width: 600px;
+		width: 100%;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+	}
+
+	h1 {
+		margin-top: 0;
+		font-size: 2rem;
+		margin-bottom: 0.5rem;
+		text-align: center;
+	}
+
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	label {
+		display: flex;
+		flex-direction: column;
+		font-weight: bold;
+	}
+
+	input[type='url'], input[type='text'], input[type='password'] {
+		padding: 0.5rem;
+		font-size: 1rem;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		margin-top: 0.5rem;
+	}
+
+	input[type=submit], button {
+		padding: 0.75rem;
+		font-size: 1rem;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: background-color 0.3s ease;
+	}
+
+	input[type=submit]:hover, button:hover {
+		background-color: #0056b3;
+	}
+
+	@media screen and (prefers-color-scheme: dark) {
+		:root {
+			background-color: #121212;
+			color: #e0e0e0;
+		}
+
+		.container {
+			background: #1e1e1e;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+		}
+
+		input[type='url'], input[type='text'], input[type='password'] {
+			background-color: #2c2c2c;
+			border: 1px solid #555;
+			color: #e0e0e0;
+		}
+
+		input[type=submit], button {
+			background-color: #1a73e8;
+		}
+
+		input[type=submit]:hover, button:hover {
+			background-color: #135ab6;
+		}
 	}
 </style>

@@ -1,0 +1,43 @@
+---
+import {getCredentials} from "../../util/db";
+import BakalariClient from "../../util/bakalari";
+export const prerender = false;
+
+const {hash} = Astro.params;
+
+if (!hash) {
+    return new Response(undefined, {
+        status: 400,
+        statusText: "Missing iCal identifier"
+    })
+}
+
+let creds = await getCredentials(hash);
+if (!creds) {
+    return new Response(undefined, {
+        status: 401,
+        statusText: "Unauthorized"
+    });
+}
+
+let credentials = JSON.parse(creds);
+const {createCalendar} = BakalariClient(credentials);
+
+try {
+    const calendar = await createCalendar();
+    const iCalURL = Astro.url.protocol + "//" + Astro.url.host + "/ical/" + hash;
+    calendar.url(iCalURL);
+
+    return new Response(calendar.toString(), {
+        headers: {
+            "Content-Type": "text/calendar; charset=utf-8"
+        }
+    });
+} catch (e) {
+    console.error(e);
+    return new Response(undefined, {
+        status: 500,
+        statusText: "Failed to fetch timetable"
+    })
+}
+---

@@ -9,6 +9,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.13.7"
+    "@astrojs/vercel": "^8.2.7",
+    "astro": "^5.13.7",
+    "ical-generator": "^9.0.0",
+    "redis": "^5.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.3"
   }
 }

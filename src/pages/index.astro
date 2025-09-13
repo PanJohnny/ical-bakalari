@@ -1,11 +1,34 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Welcome />
+	<div class="container">
+		<h1>Connect Bakaláři to your calendar</h1>
+		<h2>Login to your account</h2>
+		<form action="/create" method="post">
+			<label>
+				School Bakaláři URL
+				<input type="url" name="url" placeholder="https://something.bakalari.cz/bakaweb" required autocomplete="on" autofocus />
+			</label>
+			<label>
+				Username
+				<input type="text" name="username" placeholder="Username" required />
+			</label>
+			<label>
+				Password
+				<input type="password" name="password" placeholder="********" required />
+			</label>
+
+			<div class="cf-turnstile" data-sitekey={import.meta.env.TURNSTILE_KEY}></div>
+
+			<input type="submit" value="Login"></input>
+		</form>
+	</div>
 </Layout>
+
+<script
+	src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+	async
+	defer
+></script>
