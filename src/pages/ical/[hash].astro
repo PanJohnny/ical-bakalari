@@ -21,7 +21,7 @@ if (!creds) {
 }
 
 let credentials = JSON.parse(creds);
-const {createCalendar} = BakalariClient(credentials);
+const {createCalendar} = BakalariClient(credentials, hash);
 
 try {
     const calendar = await createCalendar();
@@ -30,7 +30,8 @@ try {
 
     return new Response(calendar.toString(), {
         headers: {
-            "Content-Type": "text/calendar; charset=utf-8"
+            "Content-Type": "text/calendar; charset=utf-8",
+            "Content-Disposition": `attachment; filename="bakalari-${hash}.ics"`,
         }
     });
 } catch (e) {

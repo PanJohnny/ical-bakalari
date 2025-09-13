@@ -16,7 +16,6 @@ export default function BakalariClient(credentials:any, hash:any) {
         const calendar = ical({ name: "Bakaláři iCal sink" });
         await refreshTokenIfNecessary();
 
-        calendar.timezone("Europe/Prague");
         calendar.method(ICalCalendarMethod.REQUEST);
         let today = new Date();
         // if it is saturday or sunday, set to next monday
@@ -98,7 +97,8 @@ export default function BakalariClient(credentials:any, hash:any) {
                     end: endDate,
                     summary,
                     description,
-                    location: room ? room.Name || room.Abbrev : "Unknown location"
+                    location: room ? room.Name || room.Abbrev : "Unknown location",
+                    timezone: "Europe/Prague"
                 });
             }
         }
