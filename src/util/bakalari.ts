@@ -94,10 +94,10 @@ export default function BakalariClient(credentials: any, hash: any) {
                 const [endHour, endMinute] = hour.EndTime.split(':').map(Number);
 
                 // Vytvořit Date objekty pro začátek a konec hodiny
-                const startDate = new Date(date);
+                let start = new Date(date);
                 startDate.setHours(beginHour, beginMinute, 0, 0);
 
-                const endDate = new Date(date);
+                let end = new Date(date);
                 endDate.setHours(endHour, endMinute, 0, 0);
 
                 // Sestavení informací o skupinách
@@ -154,8 +154,8 @@ export default function BakalariClient(credentials: any, hash: any) {
 
                 console.log(teacher);
                 calendar.createEvent({
-                    start: startDate,
-                    end: endDate,
+                    start,
+                    end,
                     summary,
                     description,
                     location: room ? room.Name || room.Abbrev : "Unknown location",
