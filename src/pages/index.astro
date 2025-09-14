@@ -1,34 +1,118 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Turnstile from "../components/Turnstile.astro";
 ---
 
 <Layout>
-	<div class="container">
-		<h1>Connect Bakaláři to your calendar</h1>
-		<h2>Login to your account</h2>
-		<form action="/create" method="post">
-			<label>
-				School Bakaláři URL
-				<input type="url" name="url" placeholder="https://something.bakalari.cz/bakaweb" required autocomplete="on" autofocus />
-			</label>
-			<label>
-				Username
-				<input type="text" name="username" placeholder="Username" required />
-			</label>
-			<label>
-				Password
-				<input type="password" name="password" placeholder="********" required />
-			</label>
+    <div class="container">
+        <h1>Connect Bakaláři to your calendar</h1>
+        <h2>Login to your account</h2>
+        <form action="/create" method="post">
+            <label>
+                School Bakaláři URL
+                <input type="url" name="url" placeholder="https://something.bakalari.cz/bakaweb" required
+                       autocomplete="on" autofocus/>
+            </label>
+            <button type="button" id="search-school" style="background-color: #d66c13">I don't know the URL</button>
+            <label>
+                Username
+                <input type="text" name="username" placeholder="Username" required/>
+            </label>
+            <label>
+                Password
+                <input type="password" name="password" placeholder="********" required/>
+            </label>
 
-			<div class="cf-turnstile" data-sitekey={import.meta.env.TURNSTILE_KEY}></div>
+            <Turnstile/>
+            <input type="submit" value="Login"></input>
+        </form>
+    </div>
 
-			<input type="submit" value="Login"></input>
-		</form>
-	</div>
+    <dialog id="search-dialog">
+        <form method="dialog">
+            <h2>Search for your school</h2>
+            <p>Start typing the name of your municipality and select it from the list. Then select your school.</p>
+            <label>
+                Municipality
+                <input type="search" id="municipality" placeholder="Type to search..." autocomplete="off" required/>
+            </label>
+            <label>
+                School
+                <input type="search" id="school-name" placeholder="Select a municipality first..." autocomplete="off"
+                       disabled required/>
+            </label>
+            <button type="submit">Close</button>
+        </form>
+    </dialog>
 </Layout>
 
-<script
-	src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-	async
-	defer
-></script>
+<script>
+    let municipalities: [{ name: string, schoolCount: number }];
+    document.getElementById("search-school")?.addEventListener("click", () => {
+        if (!municipalities) {
+            fetch("/api/municipality", {
+                headers: {
+                    "Accept": "application/json"
+                }
+            }).then(res => res.json()).then(data => {
+                municipalities = data;
+                // load municipalities into a datalist for the search field
+                const municipalityInput = document.getElementById("municipality") as HTMLInputElement;
+                const datalist = document.createElement("datalist");
+                datalist.id = "municipality-list";
+                for (const municipality of municipalities) {
+                    const option = document.createElement("option");
+                    option.value = municipality.name;
+                    option.label = `${municipality.name} (${municipality.schoolCount} schools)`;
+                    datalist.appendChild(option);
+                }
+                municipalityInput.setAttribute("list", "municipality-list");
+                document.body.appendChild(datalist);
+
+                // when user selects a municipality, search for schools
+                municipalityInput.addEventListener("input", () => {
+                    const selected = municipalities.find(m => m.name === municipalityInput.value);
+                    if (selected) {
+                        fetch(`/api/municipality/${encodeURIComponent(selected.name)}`, {
+                            headers: {
+                                "Accept": "application/json"
+                            }
+                        }).then(res => res.json()).then(data => {
+                            const schools = data.schools;
+                            const schoolInput = document.getElementById("school-name") as HTMLInputElement;
+                            schoolInput.disabled = false;
+
+                            const schoolDatalist = document.createElement("datalist");
+                            schoolDatalist.id = "school-list";
+                            schoolInput.setAttribute("list", "school-list");
+                            schoolInput.placeholder = "Start typing to search...";
+                            schoolDatalist.innerHTML = schools.map((s: any) =>
+                                `<option value="${s.name}" label="${s.name} (${s.schoolUrl})"></option>`
+                            ).join("");
+                            document.body.appendChild(schoolDatalist);
+                            schoolInput.focus();
+                            schoolInput.addEventListener("input", () => {
+                                const selectedSchool = schools.find((s: any) => s.name === schoolInput.value);
+                                if (selectedSchool) {
+                                    const urlInput = document.querySelector("input[name=url]") as HTMLInputElement;
+                                    urlInput.value = selectedSchool.schoolUrl;
+                                    const dialog = document.getElementById("search-dialog") as HTMLDialogElement;
+                                    dialog.close();
+                                }
+                            });
+                        });
+                    }
+                });
+
+                openDialog();
+            });
+        } else {
+            openDialog();
+        }
+    });
+
+    function openDialog() {
+        const dialog = document.getElementById("search-dialog") as HTMLDialogElement;
+        dialog.showModal();
+    }
+</script>

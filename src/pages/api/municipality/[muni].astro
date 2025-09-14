@@ -1,0 +1,21 @@
+---
+export const prerender = false;
+const { muni } = Astro.params;
+if (!muni) {
+    return new Response(undefined, {
+        status: 400,
+        statusText: "Missing municipality identifier"
+    });
+}
+
+const data = await fetch("https://sluzby.bakalari.cz/api/v1/municipality/" + encodeURIComponent(muni), {
+    headers: {
+        "Accept": "application/json"
+    }
+}).then(res => res.text());
+return new Response(data, {
+    headers: {
+        "Content-Type": "application/json"
+    }
+});
+---

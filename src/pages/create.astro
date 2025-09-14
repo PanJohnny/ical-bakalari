@@ -47,13 +47,17 @@ let alreadyExists;
 
 if (validation.success) {
     // Token is valid - proceed with form submission handling
-    const url = body.get('url');
+    let url = body.get('url');
     const username = body.get('username');
     const password = body.get('password');
 
     // attempt to login to bakalari
     if (!url || !username || !password) {
         return Astro.redirect('/?error=missing-fields');
+    }
+
+    if (url.endsWith("/")) {
+        url = url.slice(0, -1);
     }
 
     try {

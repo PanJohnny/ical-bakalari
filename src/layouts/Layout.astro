@@ -37,6 +37,11 @@
 		box-sizing: border-box;
 	}
 
+	[disabled] {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
 	.container {
 		background: white;
 		padding: 2rem;
@@ -68,7 +73,7 @@
 		font-weight: bold;
 	}
 
-	input[type='url'], input[type='text'], input[type='password'] {
+	input[type='url'], input[type='text'], input[type='password'], input[type='search'] {
 		padding: 0.5rem;
 		font-size: 1rem;
 		border: 1px solid #ccc;
@@ -87,6 +92,18 @@
 		transition: background-color 0.3s ease;
 	}
 
+	dialog {
+		border: none;
+		border-radius: 8px;
+		padding: 1rem;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		color: inherit;
+	}
+
+	dialog::backdrop {
+		background: rgba(0, 0, 0, 0.5);
+	}
+
 	input[type=submit]:hover, button:hover {
 		background-color: #0056b3;
 	}
@@ -102,7 +119,7 @@
 			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
 		}
 
-		input[type='url'], input[type='text'], input[type='password'] {
+		input[type='url'], input[type='text'], input[type='password'], input[type='search'] {
 			background-color: #2c2c2c;
 			border: 1px solid #555;
 			color: #e0e0e0;
@@ -114,6 +131,15 @@
 
 		input[type=submit]:hover, button:hover {
 			background-color: #135ab6;
+		}
+
+		dialog {
+			background: #1e1e1e;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+		}
+
+		dialog::backdrop {
+			background: rgba(0, 0, 0, 0.7);
 		}
 	}
 </style>
