@@ -9,6 +9,9 @@
 	</head>
 	<body>
 		<slot />
+		<footer>
+			Created by <a href="//panjohnny.me">Panjohnny</a>. Source code on <a href="//github.com/panjohnny/ical-bakalari">GitHub</a>.
+		</footer>
 	</body>
 </html>
 
@@ -27,6 +30,14 @@
 		height: 100%;
 	}
 
+	.note {
+		font-size: 0.875rem;
+		color: orange;
+		margin-top: 0.5rem;
+		text-align: center;
+		font-weight: bold;
+	}
+
 	body {
 		display: flex;
 		flex-direction: column;
@@ -35,6 +46,19 @@
 		min-height: 100vh;
 		padding: 1rem;
 		box-sizing: border-box;
+	}
+
+	footer {
+		margin-top: 10px;
+		padding: 1rem;
+		font-size: 0.875rem;
+		text-align: center;
+	}
+
+	footer a {
+		color: inherit;
+		text-decoration: none;
+		font-weight: bold;
 	}
 
 	[disabled] {
