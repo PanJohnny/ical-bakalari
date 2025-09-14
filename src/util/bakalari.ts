@@ -26,8 +26,8 @@ export default function BakalariClient(credentials:any, hash:any) {
         }
         await fetchEvents(today, calendar);
 
-        let nextWeek = new Date();
-        nextWeek.setDate(today.getDate() + 7);
+        let nextWeek = new Date(today);
+        nextWeek.setDate(nextWeek.getDate() + 7);
         await fetchEvents(nextWeek, calendar);
 
         return calendar;
