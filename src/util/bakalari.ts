@@ -75,7 +75,7 @@ export default function BakalariClient(credentials: any, hash: any) {
 
         // Zpracování dat pro každý den
         for (const day of timetable.Days) {
-            const date = new Date(day.Date);
+            const date = new Date(day.Date.split("T")[0]);
 
             for (const atom of day.Atoms) {
                 // Přeskočit vyřazené hodiny
@@ -152,7 +152,6 @@ export default function BakalariClient(credentials: any, hash: any) {
 
                 const summary = `${eventIcon}${subject.Abbrev} (${room ? room.Abbrev : "???"})`;
 
-                console.log(teacher);
                 calendar.createEvent({
                     start,
                     end,
