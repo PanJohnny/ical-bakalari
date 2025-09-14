@@ -95,10 +95,10 @@ export default function BakalariClient(credentials: any, hash: any) {
 
                 // Vytvořit Date objekty pro začátek a konec hodiny
                 let start = new Date(date);
-                startDate.setHours(beginHour, beginMinute, 0, 0);
+                start.setHours(beginHour, beginMinute, 0, 0);
 
                 let end = new Date(date);
-                endDate.setHours(endHour, endMinute, 0, 0);
+                end.setHours(endHour, endMinute, 0, 0);
 
                 // Sestavení informací o skupinách
                 let groupInfo = "";
