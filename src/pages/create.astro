@@ -16,8 +16,7 @@ async function validateTurnstile(token: any, remoteip: any) {
             body: formData
         });
 
-        const result = await response.json();
-        return result;
+        return await response.json();
     } catch (error) {
         console.error('Turnstile validation error:', error);
         return {success: false, 'error-codes': ['internal-error']};
@@ -44,6 +43,7 @@ const validation = await validateTurnstile(token, ip);
 
 let icalId;
 let alreadyExists;
+let key;
 
 if (validation.success) {
     // Token is valid - proceed with form submission handling
@@ -82,10 +82,12 @@ if (validation.success) {
 
         let {
             id,
-            alreadyCreated
-        } = await storeCredentials(credentials, username + "+" + loginData["bak:UserId"] + "@" + url);
+            alreadyCreated,
+            aesKey
+        } = await storeCredentials(credentials, username + "+" + loginData["bak:UserId"] + "@" + url, password);
         icalId = id;
         alreadyExists = alreadyCreated;
+        key = aesKey;
     } catch (e) {
         console.error(e);
         return Astro.redirect("/?error=fail");
@@ -96,17 +98,21 @@ if (validation.success) {
     return Astro.redirect('/?error=turnstile');
 }
 
-const iCal = Astro.url.protocol + "//" + Astro.url.host + "/ical/" + icalId;
+const iCal = Astro.url.protocol + "//" + Astro.url.host + "/ical/" + icalId + "?key=" + encodeURIComponent(key);
 ---
 
 <Layout>
     <main class="container">
         {!alreadyExists ? <h1>iCal link created</h1> : <h1>iCal link already exists</h1>}
-
+        <p>You can now subscribe to the link with your calendar application.</p>
+        <p>Your iCal link will expire on the nearest 31st of july.</p>
         <p>Your iCal link is <code>{iCal}</code></p>
         <button type="button" id="copy">Click here to copy</button>
-
-        <p>You can now subscribe to the link with your calendar application</p>
+        <p class="note">Never share this link with anybody as it contains the key used to encrypt your credentials. A bad actor with the access to our backend could be able to compromise your account!</p>
+        <form action="/delete" method="post" onsubmit="return confirm('Are you sure you want to delete your iCal link and all associated data? This action cannot be undone.')">
+            <input type="hidden" name="hash" value={icalId}/>
+            <input type="submit" value="Delete iCal link and all associated data" style="background-color: #d66c13"/>
+        </form>
     </main>
 </Layout>
 
@@ -118,6 +124,4 @@ const iCal = Astro.url.protocol + "//" + Astro.url.host + "/ical/" + icalId;
             event.target.innerText = "Click here to copy";
         }, 1000);
     });
-
-    localStorage.setItem("lastIcalUrl", iCal);
 </script>

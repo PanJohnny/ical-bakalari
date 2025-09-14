@@ -6,10 +6,8 @@ import Turnstile from "../components/Turnstile.astro";
 <Layout>
     <main class="container">
         <h1>Connect Bakaláři to your calendar</h1>
-        <div id="already-linked" hidden>
-            <h2>iCal found!</h2>
-            <p>You have already created an iCal link in this browser. It is: <code id="icalLink"></code></p>
-            <button type="button" id="copy">Click here to copy</button>
+        <div class="message">
+
         </div>
         <h2>Login to your account</h2>
         <form action="/create" method="post">
@@ -26,6 +24,9 @@ import Turnstile from "../components/Turnstile.astro";
             <label>
                 Password
                 <input type="password" name="password" placeholder="********" required/>
+            </label>
+            <label class="line-flex">
+                <input type="checkbox" required/><span>I agree to <a href="/policy" target="_blank" rel="noopener">the iCal Feed Credential Management Policy</a> and understand the risks of using this service.</span>
             </label>
 
             <Turnstile/>
@@ -54,6 +55,25 @@ import Turnstile from "../components/Turnstile.astro";
     </dialog>
 </Layout>
 
+<style is:global>
+    .message {
+        margin-bottom: 1rem;
+    }
+    .error {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 4px;
+        border: 1px solid #f5c6cb;
+    }
+    .success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 4px;
+        border: 1px solid #c3e6cb;
+    }
+</style>
 <script>
     let municipalities: [{ name: string, schoolCount: number }];
     document.getElementById("search-school")?.addEventListener("click", () => {
@@ -124,20 +144,44 @@ import Turnstile from "../components/Turnstile.astro";
         dialog.showModal();
     }
 
-    if (localStorage.getItem("lastIcalUrl")) {
-        const link = localStorage.getItem("lastIcalUrl");
-        const linkElem = document.getElementById("icalLink");
-        if (linkElem && link) {
-            linkElem.textContent = link;
-            (document.getElementById("already-linked") as HTMLDivElement).hidden = false;
+    // check query parameters for error messages
+    const params = new URLSearchParams(window.location.search);
+    const messageDiv = document.querySelector(".message") as HTMLDivElement;
+    if (params.has("error")) {
+        let message: string;
+        switch (params.get("error")) {
+            case "missing-fields":
+                message = "Please fill in all required fields.";
+                break;
+            case "invalid-url":
+                message = "The provided school URL is not valid.";
+                break;
+            case "login":
+                message = "Failed to login. Please check your credentials and try again.";
+                break;
+            case "captcha":
+                message = "Captcha validation failed. Please try again.";
+                break;
+            case "internal":
+                message = "An internal error occurred. Please try again later.";
+                break;
+            default:
+                message = "An unknown error occurred. Please try again.";
         }
+        messageDiv.innerHTML = `<div class="error">${message}</div>`;
+    }
 
-        document.querySelector("#copy").addEventListener("click", (event) => {
-            navigator.clipboard.writeText(link);
-            event.target.innerText = "Copied!";
-            setTimeout(() => {
-                event.target.innerText = "Click here to copy";
-            }, 1000);
-        });
+    if (params.has("deleted")) {
+        let message = "";
+        switch (params.get("deleted")) {
+            case "true":
+                message = "Your credentials have been successfully deleted.";
+                messageDiv.innerHTML = `<div class="success">${message}</div>`;
+                break;
+            case "error":
+                message = "Failed to delete your credentials. They may have already been deleted.";
+                messageDiv.innerHTML = `<div class="error">${message}</div>`;
+                break;
+        }
     }
 </script>

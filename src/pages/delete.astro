@@ -1,0 +1,19 @@
+---
+import {deleteCredentials} from "../util/db";
+export const prerender = false;
+
+const body = await Astro.request.formData();
+const hash = body.get('hash');
+
+if (!hash || typeof hash !== "string") {
+    return Astro.redirect('/?deleted=error');
+}
+
+try {
+    await deleteCredentials(hash);
+    return Astro.redirect('/?deleted=true');
+} catch (e) {
+    console.error(e);
+    return Astro.redirect('/?deleted=error');
+}
+---

@@ -1,169 +1,189 @@
 <!doctype html>
 <html lang="cs">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Bakaláři iCal connector</title>
-	</head>
-	<body>
-		<slot />
-		<footer>
-			Created by <a href="//panjohnny.me">Panjohnny</a>. Source code on <a href="//github.com/panjohnny/ical-bakalari">GitHub</a>.
-		</footer>
-	</body>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <meta name="generator" content={Astro.generator}/>
+    <title>Bakaláři iCal connector</title>
+</head>
+<body>
+<slot/>
+<footer>
+    Created by <a href="//panjohnny.me">Panjohnny</a>. Source code on <a href="//github.com/panjohnny/ical-bakalari">GitHub</a>.
+    <br>
+    <br>
+    This service is not affiliated with or endorsed by Bakaláři or its parent company, Bakaláři Software s.r.o.
+    Use at your own risk.
+</footer>
+</body>
 </html>
 
 <style is:global>
-	:root {
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-			Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-		background-color: #f9f9f9;
-		color: #333;
-	}
+    :root {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+    }
 
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+    html,
+    body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
 
-	.note {
-		font-size: 0.875rem;
-		color: orange;
-		margin-top: 0.5rem;
-		text-align: center;
-		font-weight: bold;
-	}
+    .note {
+        font-size: 0.875rem;
+        color: orange;
+        margin-top: 0.5rem;
+        text-align: center;
+        font-weight: bold;
+    }
 
-	body {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 100vh;
-		padding: 1rem;
-		box-sizing: border-box;
-	}
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
 
-	footer {
-		margin-top: 10px;
-		padding: 1rem;
-		font-size: 0.875rem;
-		text-align: center;
-	}
+    footer {
+        margin-top: 10px;
+        padding: 1rem;
+        font-size: 0.875rem;
+        text-align: center;
+    }
 
-	footer a {
-		color: inherit;
-		text-decoration: none;
-		font-weight: bold;
-	}
+    footer a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: bold;
+    }
 
-	[disabled] {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
+    [disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 
-	.container {
-		background: white;
-		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		max-width: 600px;
-		width: 100%;
-		box-sizing: border-box;
-		display: flex;
-		flex-direction: column;
-	}
+    .container {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
 
-	h1 {
-		margin-top: 0;
-		font-size: 2rem;
-		margin-bottom: 0.5rem;
-		text-align: center;
-	}
+    h1 {
+        margin-top: 0;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
 
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 
-	label {
-		display: flex;
-		flex-direction: column;
-		font-weight: bold;
-	}
+    label {
+        display: flex;
+        flex-direction: column;
+        font-weight: bold;
+    }
 
-	input[type='url'], input[type='text'], input[type='password'], input[type='search'] {
-		padding: 0.5rem;
-		font-size: 1rem;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-		margin-top: 0.5rem;
-	}
+    input[type='url'], input[type='text'], input[type='password'], input[type='search'] {
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+    }
 
-	input[type=submit], button {
-		padding: 0.75rem;
-		font-size: 1rem;
-		background-color: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: background-color 0.3s ease;
-	}
+    input[type=checkbox] {
+        margin-top: 0.5rem;
+        width: auto;
+    }
 
-	dialog {
-		border: none;
-		border-radius: 8px;
-		padding: 1rem;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		color: inherit;
-	}
+    .line-flex {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+    }
 
-	dialog::backdrop {
-		background: rgba(0, 0, 0, 0.5);
-	}
+    input[type=submit], button {
+        padding: 0.75rem;
+        font-size: 1rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
 
-	input[type=submit]:hover, button:hover {
-		background-color: #0056b3;
-	}
+    dialog {
+        border: none;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        color: inherit;
+    }
 
-	@media screen and (prefers-color-scheme: dark) {
-		:root {
-			background-color: #121212;
-			color: #e0e0e0;
-		}
+    dialog::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+    }
 
-		.container {
-			background: #1e1e1e;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-		}
+    input[type=submit]:hover, button:hover {
+        background-color: #0056b3;
+    }
 
-		input[type='url'], input[type='text'], input[type='password'], input[type='search'] {
-			background-color: #2c2c2c;
-			border: 1px solid #555;
-			color: #e0e0e0;
-		}
+    @media screen and (prefers-color-scheme: dark) {
+        :root {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
 
-		input[type=submit], button {
-			background-color: #1a73e8;
-		}
+        a {
+            color: #90caf9;
+        }
 
-		input[type=submit]:hover, button:hover {
-			background-color: #135ab6;
-		}
+        .container {
+            background: #1e1e1e;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
 
-		dialog {
-			background: #1e1e1e;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-		}
+        input[type='url'], input[type='text'], input[type='password'], input[type='search'] {
+            background-color: #2c2c2c;
+            border: 1px solid #555;
+            color: #e0e0e0;
+        }
 
-		dialog::backdrop {
-			background: rgba(0, 0, 0, 0.7);
-		}
-	}
+        input[type=submit], button {
+            background-color: #1a73e8;
+        }
+
+        input[type=submit]:hover, button:hover {
+            background-color: #135ab6;
+        }
+
+        dialog {
+            background: #1e1e1e;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.7);
+        }
+    }
 </style>

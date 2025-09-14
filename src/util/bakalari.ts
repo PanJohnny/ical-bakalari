@@ -9,7 +9,7 @@ const deezHeaders = {
     "Connection": "keep-alive"
 }
 
-export default function BakalariClient(credentials: any, hash: any) {
+export default function BakalariClient(credentials: any, hash: any, key: any) {
     let {schoolUrl, accessToken, refreshToken, tokenExpiresAt} = credentials;
 
     async function createCalendar() {
@@ -204,7 +204,7 @@ export default function BakalariClient(credentials: any, hash: any) {
                 accessToken,
                 refreshToken,
                 tokenExpiresAt
-            }, hash);
+            }, hash, key);
         }
     }
 

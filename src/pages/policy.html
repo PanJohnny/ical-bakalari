@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCal Feed Credential Management Policy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            background-color: #f9f9f9;
+            color: #222;
+        }
+        h1, h2, h3 {
+            color: #1a1a1a;
+        }
+        h1 { margin-bottom: 0.5em; }
+        h2 { margin-top: 1.5em; margin-bottom: 0.5em; }
+        h3 { margin-top: 1em; margin-bottom: 0.3em; }
+        ul { margin-left: 1.5em; }
+        code { background: #eee; padding: 2px 4px; border-radius: 3px; font-family: monospace; }
+        p { margin-bottom: 1em; }
+        .important { font-weight: bold; color: #d9534f; }
+    </style>
+</head>
+<body>
+
+<h1>iCal Feed Credential Management Policy</h1>
+
+<h2>1. Purpose</h2>
+<p>This document describes the handling, storage, and security of third-party credentials used to generate iCal calendar feeds via the service. The system allows users to provide credentials for external services (e.g., Bakaláři) and receive a static, read-only iCal URL that can be used across devices.</p>
+<p>The design balances usability (static device-independent links) with security and GDPR compliance.</p>
+
+<h2>2. Overview of the System</h2>
+<ul>
+    <li><strong>Credential Submission:</strong> Users provide login credentials for third-party services. Credentials are <strong>only used to generate a read-only iCal calendar feed</strong>.</li>
+    <li><strong>Encryption:</strong> Credentials are <span class="important">never stored in plaintext</span>. An AES-256-GCM encryption key is <span class="important">mandatory</span> and derived from a user-provided secret (password) using scrypt with a per-user salt.</li>
+    <li><strong>Static iCal URL:</strong> Each user receives a static URL containing a <code>hash</code> (derived from username/account) and the mandatory AES key. The URL acts as a <strong>read-only bearer token</strong>.</li>
+    <li><strong>Fetching the Feed:</strong> The server retrieves encrypted credentials from Redis using the hash, decrypts them using the AES key, fetches the calendar, and returns the ICS feed.</li>
+    <li><strong>Device Independence:</strong> The static URL works across multiple devices; the server does not store the AES key in plaintext.</li>
+</ul>
+
+<h2>3. Data Minimization and Retention</h2>
+<ul>
+    <li>Only encrypted credentials are stored; no permanent user accounts are created.</li>
+    <li>Credentials remain stored as long as the iCal feed exists.</li>
+    <li>Users can revoke or delete credentials at any time.</li>
+    <li>Backups contain only encrypted credentials, stored securely and access-controlled.</li>
+    <li>Stored data will expire the following 31st of july.</li>
+</ul>
+
+<h2>4. Security Measures</h2>
+<ul>
+    <li><strong>Encryption:</strong> AES-256-GCM provides confidentiality and integrity; keys are derived using scrypt with a per-user salt.</li>
+    <li><strong>Access Control:</strong> Only the server handling the iCal request can decrypt credentials. URLs are bearer tokens, HTTPS-only.</li>
+    <li><strong>Revocation:</strong> Users can delete credentials or regenerate the AES key, invalidating previous links.</li>
+    <li><strong>Logging:</strong> Logs do <strong>not</strong> store AES keys or plaintext credentials. Minimal metadata (timestamp, IP) is collected for abuse detection.</li>
+    <li><strong>Compromise Handling:</strong> In case of server compromise, AES keys in URLs can be rotated or feeds revoked. Encrypted storage ensures leaked backups do not reveal plaintext credentials.</li>
+</ul>
+
+<h2>5. GDPR & EU Compliance</h2>
+<ul>
+    <li><strong>Lawfulness:</strong> Users voluntarily provide credentials for generating iCal feeds. Only necessary data is processed.</li>
+    <li><strong>Data Minimization:</strong> Credentials are encrypted and stored only as needed.</li>
+    <li><strong>User Rights:</strong> Users may request deletion of credentials and revoke iCal feed links at any time.</li>
+    <li><strong>Data Protection by Design:</strong> Encryption at rest and in transit; static links minimize server-side exposure; rate-limiting prevents abuse.</li>
+    <li><strong>International Transfers:</strong> Data is processed within the EU or in GDPR-compliant jurisdictions.</li>
+</ul>
+
+<h2>6. Responsibilities</h2>
+<ul>
+    <li><strong>Users:</strong> Must keep the AES key secret. May revoke or regenerate links at any time.</li>
+    <li><strong>Service Provider:</strong> Encrypts credentials before storage, ensures HTTPS access, implements revocation, rotation, and secure deletion.</li>
+</ul>
+
+<h2>7. Limitations</h2>
+<ul>
+    <li>Static URLs are bearer tokens; possession grants read-only access.</li>
+    <li>Full server compromise could expose feeds temporarily; encryption protects at-rest storage only.</li>
+    <li>The system does not prevent compromise of the third-party service itself.</li>
+</ul>
+
+<h2>8. Summary</h2>
+<p>Credentials are <strong>encrypted at rest</strong> using a mandatory AES key derived from a user secret. iCal URLs are static, read-only, and device-independent. Users retain control over revocation, and GDPR principles are followed: data minimization, encryption, and user rights enforcement.</p>
+
+</body>
+</html>

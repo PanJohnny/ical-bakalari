@@ -5,6 +5,8 @@ export const prerender = false;
 
 const {hash} = Astro.params;
 
+const key = Astro.url.searchParams.get("key");
+
 if (!hash) {
     return new Response(undefined, {
         status: 400,
@@ -12,16 +14,22 @@ if (!hash) {
     })
 }
 
-let creds = await getCredentials(hash);
-if (!creds) {
+if (!key) {
+    return new Response(undefined, {
+        status: 400,
+        statusText: "Missing access key"
+    });
+}
+
+let credentials = await getCredentials(hash, key);
+if (!credentials) {
     return new Response(undefined, {
         status: 401,
         statusText: "Unauthorized"
     });
 }
 
-let credentials = JSON.parse(creds);
-const {createCalendar} = BakalariClient(credentials, hash);
+const {createCalendar} = BakalariClient(credentials, hash, key);
 
 try {
     const calendar = await createCalendar();
