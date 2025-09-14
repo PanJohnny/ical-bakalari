@@ -9,14 +9,19 @@ const deezHeaders = {
     "Connection": "keep-alive"
 }
 
-export default function BakalariClient(credentials:any, hash:any) {
+export default function BakalariClient(credentials: any, hash: any) {
     let {schoolUrl, accessToken, refreshToken, tokenExpiresAt} = credentials;
 
     async function createCalendar() {
-        const calendar = ical({ name: "Bakaláři iCal sink" });
+        const calendar = ical({
+            name: "Bakaláři iCal sink",
+            description: "View more details at b.panjohnny.me",
+            timezone: "Europe/Prague",
+            method: ICalCalendarMethod.REQUEST
+        });
+
         await refreshTokenIfNecessary();
 
-        calendar.method(ICalCalendarMethod.REQUEST);
         let today = new Date();
         // if it is saturday or sunday, set to next monday
         if (today.getDay() === 6) {
@@ -33,7 +38,19 @@ export default function BakalariClient(credentials:any, hash:any) {
         return calendar;
     }
 
-    async function fetchEvents(startDate:any, calendar:ICalCalendar) {
+    async function fetchHomework(startDate: any) {
+        let thisFriday = new Date(startDate);
+        thisFriday.setDate(thisFriday.getDate() + (5 - thisFriday.getDay()) % 7); // 5 = pátek
+        return await fetch(schoolUrl + `/api/3/homeworks?from=${startDate.toISOString().split("T")[0]}&to=${thisFriday.toISOString().split("T")[0]}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + accessToken,
+                ...deezHeaders
+            }
+        }).then(res => res.json());
+    }
+
+    async function fetchEvents(startDate: any, calendar: ICalCalendar) {
         // GET /api/3/timetable/actual?date=YYYY-MM-dd, date will be today for this week
         let dateStr = startDate.toISOString().split("T")[0];
         let timetable = await fetch(schoolUrl + `/api/3/timetable/actual?date=${dateStr}`, {
@@ -54,6 +71,7 @@ export default function BakalariClient(credentials:any, hash:any) {
         const teachersMap = Object.fromEntries(timetable.Teachers.map(teacher => [teacher.Id, teacher]));
         const roomsMap = Object.fromEntries(timetable.Rooms.map(room => [room.Id, room]));
         const groupsMap = Object.fromEntries(timetable.Groups.map(group => [group.Id, group]));
+        let homework;
 
         // Zpracování dat pro každý den
         for (const day of timetable.Days) {
@@ -61,7 +79,7 @@ export default function BakalariClient(credentials:any, hash:any) {
 
             for (const atom of day.Atoms) {
                 // Přeskočit vyřazené hodiny
-                if (!atom.SubjectId || atom.Change?.ChangeType === "Removed") continue;
+                if (!atom.SubjectId || atom.Change?.ChangeType === "Removed" || atom.Change?.ChangeType === "Canceled") continue;
 
                 const hour = hoursMap[atom.HourId];
                 const subject = subjectsMap[atom.SubjectId];
@@ -89,16 +107,60 @@ export default function BakalariClient(credentials:any, hash:any) {
                     groupInfo = `Skupina: ${groups}\n`;
                 }
 
-                const summary = `${subject.Name} (${room ? room.Abbrev : "???"})`;
-                const description = `${groupInfo}Učitel: ${teacher ? teacher.Name : "???"}\n${atom.Theme || ""}`;
+                let eventIcon = "";
 
+                if (atom.Change?.ChangeType) {
+                    groupInfo += `Změna: ${atom.Change.Description}\n`;
+                    switch (atom.Change.ChangeType) {
+                        case "Added":
+                            // plus symbol
+                            eventIcon = "➕";
+                            break;
+                        case "Substitution":
+                            // warning symbol
+                            eventIcon = "⚠️";
+                            break;
+                        case "RoomChanged":
+                            // door symbol
+                            eventIcon = "🚪";
+                            break;
+                    }
+                }
+
+                let description = `${subject.Name}\n${groupInfo}Učitel: ${teacher ? teacher.Name : "???"}\n${atom.Theme || ""}`;
+
+                let attachments = [];
+                if (atom.HomeworkIds?.length > 0) {
+                    eventIcon += "📝";
+                    if (!homework) {
+                        homework = await fetchHomework(startDate);
+                    }
+
+                    const homeworkDetails = atom.HomeworkIds.map(hwId => {
+                        const hw = homework?.Homeworks?.find((h: any) => h.ID === hwId);
+                        if (!hw) return "";
+                        let details = `\n---\n📝 Úkol: ${hw.Subject?.Name || ""}\nZadání: ${hw.Content}\nOd: ${hw.DateStart}\nDo: ${hw.DateEnd}\n`;
+                        if (hw.Attachments?.length > 0) {
+                            details += `Přílohy: ${hw.Attachments.map((a: any) => a.Name).join(", ")}\n`;
+                            attachments = attachments.concat(hw.Attachments.map((a: any) => a.Url));
+                        }
+                        return details;
+                    }).join("");
+                    // Přidat do popisu
+                    description += homeworkDetails;
+                }
+
+                const summary = `${eventIcon}${subject.Abbrev} (${room ? room.Abbrev : "???"})`;
+
+                console.log(teacher);
                 calendar.createEvent({
                     start: startDate,
                     end: endDate,
                     summary,
                     description,
                     location: room ? room.Name || room.Abbrev : "Unknown location",
-                    timezone: "Europe/Prague"
+                    timezone: "Europe/Prague",
+                    attachments,
                 });
             }
         }
