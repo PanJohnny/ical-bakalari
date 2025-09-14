@@ -100,14 +100,14 @@ const iCal = Astro.url.protocol + "//" + Astro.url.host + "/ical/" + icalId;
 ---
 
 <Layout>
-    <div class="container">
+    <main class="container">
         {!alreadyExists ? <h1>iCal link created</h1> : <h1>iCal link already exists</h1>}
 
         <p>Your iCal link is <code>{iCal}</code></p>
         <button type="button" id="copy">Click here to copy</button>
 
         <p>You can now subscribe to the link with your calendar application</p>
-    </div>
+    </main>
 </Layout>
 
 <script define:vars={{iCal}}>
