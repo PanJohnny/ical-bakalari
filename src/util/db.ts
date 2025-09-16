@@ -60,12 +60,18 @@ export async function deleteCredentials(hash: string) {
     const redis = createClient({url: import.meta.env.REDIS_URL});
     await redis.connect();
 
+    if (!await redis.exists(hash)) {
+        await redis.quit();
+        return false;
+    }
+
     try {
         const key = `bakalari:${hash}`;
         await redis.del(key);
     } finally {
         await redis.quit();
     }
+    return true;
 }
 
 export async function getCredentials(hash: string, aesKey: string) {

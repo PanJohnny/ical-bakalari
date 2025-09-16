@@ -30,6 +30,11 @@ import Turnstile from "../components/Turnstile.astro";
             </label>
 
             <Turnstile/>
+            <small style="text-align: center">
+                <a href="/revoke">
+                    Don't remember your credentials, or have they changed? Revoke access here.
+                </a>
+            </small>
             <input type="submit" value="Login"></input>
             <div class="note">
                 Make sure you trust the website hosting this service before using it.
@@ -180,6 +185,10 @@ import Turnstile from "../components/Turnstile.astro";
                 break;
             case "error":
                 message = "Failed to delete your credentials. They may have already been deleted.";
+                messageDiv.innerHTML = `<div class="error">${message}</div>`;
+                break;
+            case "false":
+                message = "No credentials found for the provided identifier.";
                 messageDiv.innerHTML = `<div class="error">${message}</div>`;
                 break;
         }

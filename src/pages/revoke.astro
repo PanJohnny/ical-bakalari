@@ -1,0 +1,45 @@
+---
+import Turnstile from "../components/Turnstile.astro";
+import Layout from "../layouts/Layout.astro";---
+
+<Layout>
+    <main class="container">
+        <h1>Revoke access</h1>
+        <p>Delete your iCal link and revoke access to your Bakaláři account</p>
+        <h2>Enter required fields</h2>
+        <form action="/delete" method="post">
+            <label>
+                Enter your iCal URL
+                <input type="url" name="url" placeholder="https://b.panjohnny.me/ical/hash?params"
+                       autocomplete="on" autofocus/>
+            </label>
+            <label>
+                Hash (automatically filled if URL is valid)
+                <input type="text" name="hash" placeholder="4766f19e2d5c56c947381347a7c64ea776311fb9a3a617d5a8000b37aa16959f" required/>
+            </label>
+
+            <input type="submit" value="Revoke access"></input>
+            <div class="note">
+                Make sure you trust the website hosting this service before using it.
+            </div>
+        </form>
+    </main>
+</Layout>
+
+<script>
+    const hash = document.querySelector('input[name="hash"]') as HTMLInputElement;
+    const urlInput = document.querySelector('input[name="url"]') as HTMLInputElement;
+    urlInput.addEventListener('input', function() {
+        try {
+            const url = new URL(urlInput.value);
+            const pathParts = url.pathname.split('/');
+            if (pathParts.length >= 3 && pathParts[1] === 'ical') {
+                hash.value = pathParts[2];
+            } else {
+                hash.value = '';
+            }
+        } catch (error) {
+            hash.value = '';
+        }
+    });
+</script>

@@ -10,7 +10,10 @@ if (!hash || typeof hash !== "string") {
 }
 
 try {
-    await deleteCredentials(hash);
+    const existed = await deleteCredentials(hash);
+    if (!existed) {
+        return Astro.redirect('/?deleted=false');
+    }
     return Astro.redirect('/?deleted=true');
 } catch (e) {
     console.error(e);
