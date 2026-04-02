@@ -1,5 +1,7 @@
 # Bakaláři iCal connector
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/project?template=https://github.com/PanJohnny/bakalari-ical)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/project?template=https://github.com/PanJohnny/ical-bakalari)
+
+
 Lets you sign in with your Bakaláři, giving you a unique iCal link, that you can use for syncing your schedule with any calendar app.
 
 My instance: [b.panjohnny.me](//b.panjohnny.me)
