@@ -6,5 +6,8 @@ import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
   adapter: vercel(),
-  site: "https://b.panjohnny.me"
+  site: "https://b.panjohnny.me",
+  security: {
+    checkOrigin: false
+  }
 });
