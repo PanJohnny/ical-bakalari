@@ -98,7 +98,9 @@ if (validation.success) {
     return Astro.redirect('/?error=turnstile');
 }
 
-const iCal = Astro.url.protocol + "//" + Astro.url.host + "/ical/" + icalId + "?key=" + encodeURIComponent(key);
+const hostFix = import.meta.env.SITE || Astro.url.host;
+
+const iCal = Astro.url.protocol + "//" + hostFix + "/ical/" + icalId + "?key=" + encodeURIComponent(key);
 ---
 
 <Layout>
